@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import palette from './assets/palette.svg';
+import wheel from './assets/wheel.gif';
 
 import './App.css';
 import ConfettiExplosion from 'react-confetti-explosion';
@@ -15,67 +16,14 @@ function App() {
   const [chosenColor, setChosenColor] = useState('');
   const [status, setStatus] = useState('');
   const [score, setScore] = useState(0);
-  const obj = [
-    {
-      target: '#86efac',
-      options: [
-        '#20D662',
-        '#44E47E',
-        '#70EB9D',
-        '#86efac',
-        '#9CF2BB',
-        '#C9F8DA'
-      ]
-    },
+  const [colorOptions, setColorOptions] = useState([]);
 
-    {
-      target: '#f55a5a',
-      options: [
-        '#C01010',
-        '#F9A2A2',
-        '#ED1515',
-        '#F24444',
-        '#f55a5a',
-        '#F67373'
-      ]
-    },
-
-    {
-      target: '#0074AB',
-      options: [
-        '#011D2A',
-        '#0074AB',
-        '#023F5D',
-        '#02628F',
-        '#0285C3',
-        '#01A7F6'
-      ]
-    },
-    {
-      target: '#F27AD2',
-      options: [
-        '#D419A2',
-        '#E937B9',
-        '#EF64CA',
-        '#F491DA',
-        '#F9BFEA',
-        '#F27AD2'
-      ]
-    }
-  ];
-  const [colorOptions, setColorOptions] = useState([
-    '#C01010',
-    '#F9A2A2',
-    '#ED1515',
-    '#F24444',
-    '#f55a5a',
-    '#F67373'
-  ]);
   const styles = status.toLowerCase().includes('correct')
     ? '#16a34a'
     : status.toLowerCase().includes('wrong')
     ? '#dc2626'
     : 'transparent';
+
   const fetchRandomColor = () => {
     fetch('https://x-colors.yurace.pro/api/random')
       .then((res) => res.json())
@@ -83,6 +31,12 @@ function App() {
         console.log(data);
         setTargetColor(data.hex.replace('#', ''));
         fetchColorScheme(data.hex.replace('#', ''));
+      })
+      .catch(() => {
+        setLoading(true);
+        enqueueSnackbar('Check your network and try again!', {
+          variant: 'error'
+        });
       });
   };
 
@@ -106,9 +60,11 @@ function App() {
         setLoading(false);
         setNextQuestionLoad(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setLoading(true);
-        enqueueSnackbar('Check your network and try again!', 'error');
+        enqueueSnackbar('Check your network and try again!', {
+          variant: 'error'
+        });
       });
   };
 
@@ -131,7 +87,7 @@ function App() {
       setNextQuestionLoad(true);
       setStatus('');
       fetchRandomColor();
-    }, 750);
+    }, 1000);
   };
 
   const resetGame = () => {
@@ -155,7 +111,11 @@ function App() {
       </header>
       <main>
         {loading ? (
-          'Loading....'
+          <div className='loader'>
+            <img src={wheel} />
+
+            <p>Loading.....</p>
+          </div>
         ) : (
           <section id='game'>
             <p id='instruction' data-testid='gameInstructions'>
@@ -166,7 +126,11 @@ function App() {
             </p>
 
             {nextQuestionLoad ? (
-              'Next Question incoming.....'
+              <div className='loader'>
+                <img src={wheel} />
+
+                <p>Next Question incoming.....</p>
+              </div>
             ) : (
               <>
                 <div id='colorBox' className={wrongAnim + ' ' + rightAnim}>
