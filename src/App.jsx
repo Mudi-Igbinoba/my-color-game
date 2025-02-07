@@ -3,6 +3,7 @@ import palette from './assets/palette.svg';
 
 import './App.css';
 import ConfettiExplosion from 'react-confetti-explosion';
+import { enqueueSnackbar } from 'notistack';
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -76,7 +77,6 @@ function App() {
     ? '#dc2626'
     : 'transparent';
   const fetchRandomColor = () => {
-    // setLoading(true);
     fetch('https://x-colors.yurace.pro/api/random')
       .then((res) => res.json())
       .then((data) => {
@@ -105,6 +105,10 @@ function App() {
         setColorOptions(shuffle(newColorScheme));
         setLoading(false);
         setNextQuestionLoad(false);
+      })
+      .catch((err) => {
+        setLoading(true);
+        enqueueSnackbar('Check your network and try again!', 'error');
       });
   };
 
@@ -139,19 +143,6 @@ function App() {
 
   useEffect(() => {
     setLoading(true);
-
-    // const random = Math.floor(Math.random() * obj.length);
-    // const shuffle = (array) => {
-    //   return array.sort(() => Math.random() - 0.5);
-    // };
-
-    // const shuffledArray = shuffle(obj);
-    // const randomScheme = shuffledArray[random];
-
-    // setTargetColor(randomScheme.target);
-
-    // setColorOptions(randomScheme.options);
-
     fetchRandomColor();
   }, [0]);
 
