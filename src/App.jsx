@@ -28,15 +28,17 @@ function App() {
     fetch('https://x-colors.yurace.pro/api/random')
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setTargetColor(data.hex.replace('#', ''));
         fetchColorScheme(data.hex.replace('#', ''));
       })
       .catch(() => {
-        setLoading(true);
-        enqueueSnackbar('Check your network and try again!', {
-          variant: 'error'
-        });
+        // setLoading(true);
+        let arr = ['#664c43', '#873d48', '#dc758f', '#e3d3e4', '#00ffcd'];
+        let num = Math.floor(Math.random() * arr.length);
+
+        let random = arr[num];
+        setTargetColor(random.replace('#', ''));
+        fetchColorScheme(random.replace('#', ''));
       });
   };
 
@@ -50,12 +52,10 @@ function App() {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-
         const newColorScheme = data?.colors?.map((e) => e.hex.value);
 
         newColorScheme.push(data?.seed?.hex.value);
-        console.log(newColorScheme);
+
         setColorOptions(shuffle(newColorScheme));
         setLoading(false);
         setNextQuestionLoad(false);
@@ -70,7 +70,9 @@ function App() {
 
   const handleChange = (event) => {
     setChosenColor(event.target.value);
-    if ('#' + targetColor === event.target.value) {
+    if (
+      ('#' + targetColor).toLowerCase() === event.target.value.toLowerCase()
+    ) {
       setStatus('Correct!');
       setScore(score + 1);
       setIsExploding(true);
